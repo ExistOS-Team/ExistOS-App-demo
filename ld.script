@@ -1,0 +1,88 @@
+
+
+
+MEMORY
+{
+  SRAM    (rwx) : ORIGIN = 0x02500000, LENGTH = 1M
+  VROM    (rx ) : ORIGIN = 0x03000000, LENGTH = 4M
+}
+
+OUTPUT_ARCH(arm)
+ENTRY(_entry)
+
+SECTIONS
+{
+
+	.init.text :
+	{ 
+		*(.init)
+
+	} >VROM
+
+	.init.data :
+	{
+		*(.init.data)
+	} >VROM
+
+  	.ctors          :
+  	{
+		PROVIDE(__ctors_start__ = .);
+		
+		KEEP (*(SORT(.init_array.*)))
+		KEEP (*(.init_array))
+		PROVIDE(__ctors_end__ = .);	
+		  
+  	} >VROM
+
+
+	. = ALIGN(4);
+	.text :	
+	{
+		*(.text)
+	} >VROM
+
+	. = ALIGN(8);
+	.rodata : 
+	{
+		. = ALIGN(4);
+		*(.rodata) 
+	} >VROM
+
+	.ARM.extab :
+    {
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+    } >VROM
+
+	.ARM.exidx : {
+	    __exidx_start = .;
+	    *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+	    __exidx_end = .;
+	} >VROM
+
+
+	__init_data = .;
+	.data : 
+	{
+		. = ALIGN(4);
+		__data_start = .;
+		*(.data .data.*)
+		*(.gnu.linkonce.d.*)
+		CONSTRUCTORS
+		. = ALIGN(4);
+		__data_end = .;
+	} >SRAM AT >VROM
+
+	. = ALIGN(8);
+    .bss : {
+		. = ALIGN(8);
+        _sbss = .;
+        *(.bss .bss.*)
+        *(.gnu.linkonce.b.*)
+        *(COMMON)
+        . = ALIGN(8);
+        _ebss = .;
+    } > SRAM
+
+
+}
+
