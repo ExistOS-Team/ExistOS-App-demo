@@ -8,11 +8,26 @@ MEMORY
 }
 
 OUTPUT_ARCH(arm)
-ENTRY(_entry)
+ENTRY(_start)
 
 SECTIONS
 {
+  .rel.plt        :
+    {
+      *(.rel.plt)
+    }
+  .rela.plt       :
+    {
+      *(.rela.plt)
+    }
 
+  . = ALIGN(CONSTANT (MAXPAGESIZE));
+  
+  .plt            : { *(.plt) }
+  .iplt           : { *(.iplt) }
+  .dynamic        : { *(.dynamic) }
+  .got            : { *(.got.plt) *(.igot.plt) *(.got) *(.igot) }
+  
 	.init.text :
 	{ 
 		*(.init)
@@ -82,7 +97,6 @@ SECTIONS
         . = ALIGN(8);
         _ebss = .;
     } > SRAM
-
 
 }
 

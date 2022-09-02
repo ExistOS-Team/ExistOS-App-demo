@@ -1,11 +1,8 @@
 
 #include <sys/types.h>
-#include <stdlib.h>
 
 #include "syscall.h"
-
-apiFuncList_t *sysApiFuncList;
-
+        
 extern unsigned int _sbss;
 extern unsigned int _ebss;
 extern unsigned int __init_data;
@@ -14,14 +11,14 @@ extern unsigned int __data_end;
 
 int main();
 
-int __attribute__((section(".init"))) __attribute__((naked)) __attribute__((target("arm"))) _entry() 
+int __attribute__((section(".init"))) __attribute__((naked)) __attribute__((target("arm"))) _start() 
 {
+    /*
     __asm volatile(".word 0xA55AAA55"); 
     __asm volatile(".word 1936291909"); 
     __asm volatile(".word 1347436916"); //"ExistAPP"
-
+*/
     __asm volatile("push {r14}");
-    __asm volatile("push {r0}");
 
     for (char *i = (char *)&_sbss; i < (char *)&_ebss; i++) {
         *i = 0; // clear bss
@@ -41,9 +38,6 @@ int __attribute__((section(".init"))) __attribute__((naked)) __attribute__((targ
         (*p)();
     }
 
-    __asm volatile("pop {r0}");
-    __asm volatile("ldr r1,=sysApiFuncList");
-    __asm volatile("str r0, [r1]");
 
     main();
 
