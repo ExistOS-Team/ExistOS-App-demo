@@ -2,17 +2,15 @@
 #include <stdio.h>
 
 #include "syscall.h"
-
-extern void dlsyn_test(int a);
-extern void dlsyn_test2(int a);
+#include "ff.h"
 
 uint8_t vram[256*127];
 
+FIL *f;
+
 int main() 
 {
-
-    void lcd_test();
-    lcd_test();
+    ll_cpu_slowdown_enable(false);
 
     for(int y = 0; y < 127; y++)
     {
@@ -24,16 +22,17 @@ int main()
 
     ll_disp_put_area(vram, 0, 0, 255, 126);
 
-    ll_put_str("hello 4\n"); 
+    f = pvPortMalloc(sizeof(FIL));
 
-    //sysApiFuncList->taskSleepMs(3000);
+    f_open(f, "/test.txt", FA_CREATE_ALWAYS | FA_WRITE);
 
-    //ll_disp_put_area(0, 0, 0, 255, 126);
+    f_printf(f, "hello world!\n");
 
+    f_close(f);
 
-    dlsyn_test(1);
-    dlsyn_test2(2);
-    printf("qwe\n");
+    vTaskDelay(pdMS_TO_TICKS(3000));
+
+    vPortFree(f);
 
     return 0;
 }

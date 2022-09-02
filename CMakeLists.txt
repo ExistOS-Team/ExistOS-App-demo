@@ -14,6 +14,9 @@ SET(BUILD_SHARED_LIBRARIES ON)
 add_link_options( -T ${CMAKE_SOURCE_DIR}/ld.script -Wl,--gc-sections -Wl,--unresolved-symbols=ignore-in-object-files  -Wl,--emit-relocs -shared )
  
 include_directories(./)
+include_directories(./include)
+include_directories(./include/fatfs)
+include_directories(./include/freertos) 
 
 aux_source_directory(.   APP_SRCS)
 
