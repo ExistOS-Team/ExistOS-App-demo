@@ -1,25 +1,34 @@
 
+#pragma once
 
 #include <stdint.h>
-#include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 
 #include "ll_sys_api_code.h"
-#include "syscall.h"
 
 
-#undef DECDEF_LLSWI
-#define DECDEF_LLSWI(ret, name, pars, SWINum)                           \
-    ret NAKED TARGET_ARM name pars                                      \
-    {                                                                   \
-        __asm volatile("swi %0" :: "i"(SWINum));                        \
-        __asm volatile("bx lr");                                        \
-    }
+#ifndef NAKED
+    #define NAKED   __attribute__((naked))
+#endif
+
+#define TARGET_ARM   __attribute__((target("arm"))) 
+
+#define DECDEF_LLSWI(ret, name, pars, SWINum)   \
+    ret NAKED TARGET_ARM name pars;
 
 #ifdef __cplusplus
     extern "C" {
 #endif
+
+typedef void (*void_ApiFunc)();
+typedef void* (*pvoid_ApiFunc)();
+
+typedef struct apiFuncList_t
+{
+    void_ApiFunc taskSleepMs;
+    pvoid_ApiFunc taskCreate;
+}apiFuncList_t;
+
 
 //    Return Type       Function Name               Parameters                               LL SWI Number
 DECDEF_LLSWI(void,         ll_put_str,                  (char *s)                                   ,LL_SWI_WRITE_STRING1           );
@@ -27,8 +36,8 @@ DECDEF_LLSWI(void,         ll_put_str2,                 (char *s, uint32_t len) 
 DECDEF_LLSWI(void,         ll_put_ch,                   (char c)                                    ,LL_SWI_PUT_CH                  );
 DECDEF_LLSWI(uint32_t,     ll_get_time_us,              (void)                                      ,LL_FAST_SWI_GET_TIME_US        );
 DECDEF_LLSWI(uint32_t,     ll_get_time_ms,              (void)                                      ,LL_FAST_SWI_GET_TIME_MS        );
-DECDEF_LLSWI(void,         ll_sleep_ms,                 (uint32_t ms)                               ,LL_FAST_SWI_VM_SLEEP_MS        );
-DECDEF_LLSWI(uint32_t,     ll_check_key,                (void)                                      ,LL_FAST_SWI_CHECK_KEY          );
+DECDEF_LLSWI(void,         ll_vm_sleep_ms,              (uint32_t ms)                               ,LL_FAST_SWI_VM_SLEEP_MS        );
+DECDEF_LLSWI(uint32_t,     ll_vm_check_key,             (void)                                      ,LL_FAST_SWI_CHECK_KEY          );
 DECDEF_LLSWI(void,         ll_set_keyboard,             (bool enable_report)                        ,LL_SWI_SET_KEY_REPORT          );
 DECDEF_LLSWI(void,         ll_set_serial,               (bool enable)                               ,LL_SWI_SET_SERIALPORT          );
 DECDEF_LLSWI(void,         ll_set_timer,                (bool enbale, uint32_t period_ms)           ,LL_SWI_ENABLE_TIMER            );
@@ -75,10 +84,12 @@ DECDEF_LLSWI(uint32_t,     ll_cpu_slowdown_enable,      (bool enable)           
 DECDEF_LLSWI(uint32_t,     ll_cpu_slowdown_min_frac,    (uint32_t val)                              ,LL_SWI_SLOW_DOWN_MINFRAC               );
 DECDEF_LLSWI(uint32_t,     ll_rtc_get_sec,              (void)                                      ,LL_FAST_SWI_RTC_GET_SEC                );
 DECDEF_LLSWI(void,         ll_rtc_set_sec,              (uint32_t val)                              ,LL_FAST_SWI_RTC_SET_SEC                );
+    
 DECDEF_LLSWI(uint32_t,     ll_system_idle,              (void)                                      ,LL_FAST_SWI_SYSTEM_IDLE                );
 
 
 #ifdef __cplusplus          
     }          
 #endif
+
 

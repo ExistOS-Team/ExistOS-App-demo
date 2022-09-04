@@ -4,7 +4,8 @@
 
 #include "syscall.h"
 
-apiFuncList_t *sysApiFuncList;
+#include "FreeRTOS.h"
+#include "task.h"
 
 extern unsigned int _sbss;
 extern unsigned int _ebss;
@@ -12,43 +13,37 @@ extern unsigned int __init_data;
 extern unsigned int __data_start;
 extern unsigned int __data_end;
 
+extern void (*__preinit_array_start[])(void) __attribute__((weak));
+extern void (*__preinit_array_end[])(void) __attribute__((weak));
+extern void (*__init_array_start[])(void) __attribute__((weak));
+extern void (*__init_array_end[])(void) __attribute__((weak));
+extern void (*__fini_array_start[])(void) __attribute__((weak));
+extern void (*__fini_array_end[])(void) __attribute__((weak));
+
+extern void exp_app_exit();
 int main();
 
-int __attribute__((section(".init"))) __attribute__((naked)) __attribute__((target("arm"))) _entry() 
+int __attribute__((section(".init"))) __attribute__((naked)) __attribute__((target("arm"))) _start()
 {
-    __asm volatile(".word 0xA55AAA55"); 
-    __asm volatile(".word 1936291909"); 
-    __asm volatile(".word 1347436916"); //"ExistAPP"
 
-    __asm volatile("push {r14}");
-    __asm volatile("push {r0}");
-
-    for (char *i = (char *)&_sbss; i < (char *)&_ebss; i++) {
+    for (char *i = (char *)&_sbss; i < (char *)&_ebss; i++)
+    {
         *i = 0; // clear bss
     }
 
-    uint32_t *pui32Src, *pui32Dest;
-    pui32Src = (uint32_t *)&__init_data;
-    for (pui32Dest =  (uint32_t *)&__data_start; pui32Dest <  (uint32_t *)&__data_end;) {
-        *pui32Dest++ = *pui32Src++;
-    }
-
-    typedef void (*pfunc)();
-    extern pfunc __ctors_start__[];
-    extern pfunc __ctors_end__[];
-    pfunc *p;
-    for (p = __ctors_start__; p < __ctors_end__; p++) {
-        (*p)();
-    }
-
-    __asm volatile("pop {r0}");
-    __asm volatile("ldr r1,=sysApiFuncList");
-    __asm volatile("str r0, [r1]");
+    for (void (**pp)() = __preinit_array_start; pp < __preinit_array_end; ++pp)
+        (**pp)();
+    // TODO: Init.
+    for (void (**pp)() = __init_array_start; pp < __init_array_end; ++pp)
+        (**pp)();
 
     main();
 
-    __asm volatile("pop {r15}");
+    for (void (**pp)() = __fini_array_start; pp < __fini_array_end; ++pp)
+        (**pp)();
 
-
+    exp_app_exit();
+    vTaskDelete(NULL);
+    for (;;)
+        ;
 }
-
