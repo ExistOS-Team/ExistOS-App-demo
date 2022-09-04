@@ -36,8 +36,8 @@ DECDEF_LLSWI(void,         ll_put_str2,                 (char *s, uint32_t len) 
 DECDEF_LLSWI(void,         ll_put_ch,                   (char c)                                    ,LL_SWI_PUT_CH                  );
 DECDEF_LLSWI(uint32_t,     ll_get_time_us,              (void)                                      ,LL_FAST_SWI_GET_TIME_US        );
 DECDEF_LLSWI(uint32_t,     ll_get_time_ms,              (void)                                      ,LL_FAST_SWI_GET_TIME_MS        );
-DECDEF_LLSWI(void,         ll_sleep_ms,                 (uint32_t ms)                               ,LL_FAST_SWI_VM_SLEEP_MS        );
-DECDEF_LLSWI(uint32_t,     ll_check_key,                (void)                                      ,LL_FAST_SWI_CHECK_KEY          );
+DECDEF_LLSWI(void,         ll_vm_sleep_ms,              (uint32_t ms)                               ,LL_FAST_SWI_VM_SLEEP_MS        );
+DECDEF_LLSWI(uint32_t,     ll_vm_check_key,             (void)                                      ,LL_FAST_SWI_CHECK_KEY          );
 DECDEF_LLSWI(void,         ll_set_keyboard,             (bool enable_report)                        ,LL_SWI_SET_KEY_REPORT          );
 DECDEF_LLSWI(void,         ll_set_serial,               (bool enable)                               ,LL_SWI_SET_SERIALPORT          );
 DECDEF_LLSWI(void,         ll_set_timer,                (bool enbale, uint32_t period_ms)           ,LL_SWI_ENABLE_TIMER            );

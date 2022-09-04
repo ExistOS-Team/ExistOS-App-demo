@@ -10,21 +10,23 @@ ENTRY(_start)
 
 SECTIONS
 {
+	
   .rel.plt        :
     {
       *(.rel.plt)
-    }
+    } > SRAM
   .rela.plt       :
     {
       *(.rela.plt)
-    }
+    } > SRAM
+	
 
   . = ALIGN(CONSTANT (MAXPAGESIZE));
   
-  .plt            : { *(.plt) }
-  .iplt           : { *(.iplt) }
-  .dynamic        : { *(.dynamic) }
-  .got            : { *(.got.plt) *(.igot.plt) *(.got) *(.igot) }
+  .plt            : { *(.plt) } > SRAM
+  .iplt           : { *(.iplt) }> SRAM
+  .dynamic        : { *(.dynamic) } > SRAM
+  .got            : { *(.got.plt) *(.igot.plt) *(.got) *(.igot) } > SRAM
   
 	.init.text :
 	{ 
@@ -37,16 +39,24 @@ SECTIONS
 		*(.init.data)
 	} >VROM
 
+/* 
   	.ctors          :
   	{
 		PROVIDE(__ctors_start__ = .);
-		
 		KEEP (*(SORT(.init_array.*)))
 		KEEP (*(.init_array))
 		PROVIDE(__ctors_end__ = .);	
 		  
   	} >VROM
 
+  	.fini_array    :
+  	{
+  	  PROVIDE_HIDDEN (__fini_array_start = .);
+  	  KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
+  	  KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
+  	  PROVIDE_HIDDEN (__fini_array_end = .);
+  	} > VROM
+*/
 
 	. = ALIGN(4);
 	.text :	
@@ -80,8 +90,23 @@ SECTIONS
 		__data_start = .;
 		*(.data .data.*)
 		*(.gnu.linkonce.d.*)
-		CONSTRUCTORS
-		. = ALIGN(4);
+		
+        . = ALIGN(4);
+        __preinit_array_start = .;
+        *(.preinit_array)
+        __preinit_array_end = .;
+
+        __init_array_start = .;
+        *(SORT(.init_array.*))
+        *(.init_array)
+        __init_array_end = .;
+
+        __fini_array_start = .;
+        *(SORT(.fini_array.*))
+        *(.fini_array)
+        __fini_array_end = .;
+        . = ALIGN(16);
+
 		__data_end = .;
 	} >SRAM AT >VROM
 
