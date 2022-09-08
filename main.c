@@ -12,6 +12,8 @@
 #include "MemfbDefs.h"
 #include "RepicoGL/GL/gl.h"
 
+#include "vram_graph2d.h"
+
 uint8_t vram[256*128];
 
 /*
@@ -64,7 +66,7 @@ static void gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
       glVertex3f( r1*cos(angle+3*da), r1*sin(angle+3*da), width*0.5 );
    }
    glEnd();
-
+ 
 
    glNormal3f( 0.0, 0.0, -1.0 );
 
@@ -291,14 +293,24 @@ int loop( void ) {
         }
     }
     
-    
+    /*
     for(int y = 0; y < 128; y++)
     {
         for(int x = 0; x < 256; x++)
         {
             vram[ 256 * y + x ] = glbuf[128 * (y/2) + (x/2)];
         }
+    }*/
+    //ll_disp_put_area(vram, 0, 0, 255, 126);
+
+    for(int y = 0; y < 128; y++)
+    {
+        for(int x = 0; x < 256; x++)
+        {
+            vram[ 256 * y + x ] = glbuf[512 * (y*2) + (x*2)];
+        }
     }
+
     ll_disp_put_area(vram, 0, 0, 255, 126);
 
     return 0;
@@ -306,10 +318,11 @@ int loop( void ) {
 
 
 FIL *f;
-
+FRESULT fr;
 int main() 
 {
     ll_cpu_slowdown_enable(false);
+    vram_initialize(vram);
 
     for(int y = 0; y < 127; y++)
     {
@@ -319,20 +332,26 @@ int main()
         }
     }
 
+    vram_put_string(5,6,"Hello World", 0, 255, 16);
+
     ll_disp_put_area(vram, 0, 0, 255, 126);
 
-    vTaskDelay(pdMS_TO_TICKS(3000));
-    
-    ui_loop(0, NULL, NULL);
+
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
 
     f = pvPortMalloc(sizeof(FIL));
 
-    f_open(f, "/test.txt", FA_WRITE);
-
-    f_printf(f, "hello world!\n");
+    fr = f_open(f, "test.txt", FA_WRITE | FA_CREATE_NEW);
+    printf("fr:%d\n", fr);
+    fr = f_printf(f, "hello world!\n");
+    printf("fr:%d\n", fr);
+    f_sync(f);
 
     f_close(f);
     
+    ui_loop(0, NULL, NULL);
+
     vPortFree(f);
 
     return 0;

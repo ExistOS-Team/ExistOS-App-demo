@@ -26,10 +26,10 @@ add_subdirectory(RepicoGL)
 
 add_executable(testApp.elf ${APP_SRCS})
 
-target_compile_options(picogl PRIVATE -mtune=arm926ej-s -mcpu=arm926ej-s -mlittle-endian -mthumb
+target_compile_options(picogl PRIVATE -mtune=arm926ej-s -mcpu=arm926ej-s -mlittle-endian -marm
 -Os -pipe -fdata-sections -ffunction-sections -fcommon -finline-functions -Wall)
 
-target_compile_options(testApp.elf PRIVATE -mtune=arm926ej-s -mcpu=arm926ej-s -mlittle-endian -mthumb -fPIC -shared
+target_compile_options(testApp.elf PRIVATE -mtune=arm926ej-s -mcpu=arm926ej-s -mlittle-endian -marm -fPIC -shared
 -Os -pipe -fdata-sections -ffunction-sections -fcommon -finline-functions -Wall)
 
 target_link_libraries(testApp.elf PRIVATE 
