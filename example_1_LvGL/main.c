@@ -15,6 +15,7 @@ extern const lv_font_t SourceHanSans11; //中文字体
 
 static lv_obj_t *screen;
 static lv_group_t *group_default_backup; //用于备份System界面输入设备绑定的Group，返回时需恢复Group
+static lv_group_t *group_sys_indev_backup; //用于备份System界面输入设备绑定的Group，返回时需恢复Group
 
 static lv_obj_t *win;
 static lv_obj_t *cont;
@@ -78,6 +79,7 @@ int main()
 
     screen = lv_scr_act();                         //获取当前屏幕对象
     group_default_backup = lv_group_get_default(); //备份进入应用前系统正在使用的组
+    group_sys_indev_backup = SystemGetInKeypad()->group;
 
     win = lv_win_create(screen, 0);   //在当前屏幕上创建一个无标题栏的窗口
     cont = lv_win_get_content(win);   //获取窗口内容对象
@@ -119,8 +121,9 @@ int main()
     }
 
     lv_group_set_default(group_default_backup);                    //还原为系统默认组
-    lv_indev_set_group(SystemGetInKeypad(), group_default_backup); //将输入设备归还给系统
+    lv_indev_set_group(SystemGetInKeypad(), group_sys_indev_backup); //将输入设备归还给系统
     lv_obj_del(win);                                               //销毁窗口
+    lv_group_del(group_msgbox);
     lv_group_del(group_win);
     return 0;
 }
