@@ -28,11 +28,12 @@ aux_source_directory(.   APP_SRCS)
 add_executable(${CMAKE_PROJECT_NAME}.elf ${APP_SRCS})
 
 target_compile_options(${CMAKE_PROJECT_NAME}.elf PRIVATE -mtune=arm926ej-s -mcpu=arm926ej-s -mlittle-endian -marm -mlong-calls
--O3 -pipe -fdata-sections -ffunction-sections -fcommon -finline-functions)
+-Os -pipe -fdata-sections -ffunction-sections -fcommon -finline-functions)
 
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME}.elf POST_BUILD
     COMMAND arm-none-eabi-size ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf 
+    COMMAND ${CMAKE_SOURCE_DIR}/tools/eld.exe --appelf ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.elf --symtab ${CMAKE_SOURCE_DIR}/sys_symtab.txt --exp ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_PROJECT_NAME}.exp
 )
 
 add_custom_target(${CMAKE_PROJECT_NAME}.exp 
