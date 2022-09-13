@@ -28,9 +28,18 @@ APP运行时需要调用相关的系统函数以及运行库，引出编译前�
 
 ![pic](pictures/1.png)
 
-`example_3_TinyGL` 提供了引入外部图形库TinyGL（OpenGL子集）渲染3D图形的示范，以及FatFS文件系统操作文件的简单示例。
+`example_2_TinyGL` 提供了引入外部图形库TinyGL（OpenGL子集）渲染3D图形的示范，以及FatFS文件系统操作文件的简单示例。
 
 ![pic](pictures/2.gif)
+
+
+`example_3_doom` 演示了较大型app如doom移植的示例工程。
+
+![pic](pictures/3.gif)
+
+`example_4_multithread` 提供一个使用FreeRTOS进行多线程编程的示范。
+
+![pic](pictures/4.gif)
 
 ## API简单参考
 
@@ -38,6 +47,7 @@ APP运行时需要调用相关的系统函数以及运行库，引出编译前�
 
 ### basic_api.h 
 
+---
 ```c
 void api_vram_initialize(uint8_t *vram_addr);
 ```
@@ -46,11 +56,16 @@ void api_vram_initialize(uint8_t *vram_addr);
 
 `vram_addr` : 用户提供帧缓冲区地址，可以通过malloc或定义数组。
 
+---
+
 ```c
 void *api_vram_get_current(void);
 ```
 
 获取已经初始化帧的缓冲区。
+
+---
+
 
 ```c
 void api_vram_flush(void);
@@ -58,11 +73,15 @@ void api_vram_flush(void);
 
 刷新显示帧缓冲区，一般情况下写入帧缓冲区时屏幕不会显示，需要通过该函数刷新方可显示。
 
+---
+
 ```c
 void api_vram_clear(uint16_t color);
 ```
 
 用给定颜色填充整个缓冲区。
+
+---
 
 ```c
 void api_vram_put_char(int x0, int y0, char ch, int fg, int bg, int fontSize);
@@ -70,11 +89,15 @@ void api_vram_put_char(int x0, int y0, char ch, int fg, int bg, int fontSize);
 
 在给定坐标(`x0`,`y0`)输出一个字符`ch`, `fg`为前景色（即字体颜色），`bg`为背景色，`fontSize`字号可选8、12、16。
 
+---
+
 ```c
 void api_vram_put_string(int x0, int y0, char *s, int fg, int bg, int fontSize);
 ```
 
 在给定坐标(`x0`,`y0`)输出一个字符串`s`, `fg`为前景色（即字体颜色），`bg`为背景色，`fontSize`字号可选8、12、16，字符串超出屏幕右边后会到下一行从头继续输出。
+
+---
 
 ```c
 void api_vram_set_pixel(uint32_t x, uint32_t y, uint8_t c);
@@ -82,11 +105,15 @@ void api_vram_set_pixel(uint32_t x, uint32_t y, uint8_t c);
 
 设置给定坐标(`x`,`y`)处的像素点颜色。
 
+---
+
 ```c
 void api_vram_draw_HLine(int y, int x1, int x2, unsigned short c);
 ```
 
 在`y`处绘制一条从`x1`到`x2`颜色为`c`的水平线。
+
+---
 
 ```c
 void api_vram_draw_VLine(int x, int y1, int y2, unsigned short c);
@@ -94,17 +121,23 @@ void api_vram_draw_VLine(int x, int y1, int y2, unsigned short c);
 
 在`x`处绘制一条从`y1`到`y2`颜色为`c`的垂直线。
 
+---
+
 ```c
 void api_vram_draw_line(int x1, int y1, int x2, int y2, unsigned short c);
 ```
 
 从(`x1`,`y1`)到(`x2`,`y2`)绘制一条颜色为`c`的线段。
 
+---
+
 ```c
 void api_vram_fill_rect(int x, int y, int w, int h, unsigned short c);
 ```
 
 以(`x`,`y`)为左上角填充一个宽`w`高`h`颜色为`c`的矩形
+
+---
 
 ```c
 int api_get_key(int check_key);
