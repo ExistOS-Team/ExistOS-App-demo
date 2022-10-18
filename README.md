@@ -41,6 +41,17 @@ APP运行时需要调用相关的系统函数以及运行库，引出编译前�
 
 ![pic](pictures/4.gif)
 
+`example_5_coremark` 为Core Mark CPU跑分测试。
+
+![pic](pictures/2.png)
+
+## 串口调试
+
+printf等标准输出会重定向到USB串口中显示，可以使用相应的串口软件进行观看输出日志。
+
+![pic](pictures/3.png)
+
+
 ## API简单参考
 
 系统自带相关库以及提供的API函数声明均在项目工程的`include`目录下，`include/existosapi`内为系统提供最基本功能的API，包括屏幕原生绘图，按键获取等。`syscall.h`为系统最底层API，提供了如Flash FTL层扇区读写、CPU电源管理、频率控制等API。

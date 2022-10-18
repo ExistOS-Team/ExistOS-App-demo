@@ -27,8 +27,8 @@ static FBDevGLXContext *ctx;
  */
 static void initialize_fbdev() {
 
-    FrameBuffer = api_vram_get_current();
-/*
+    //FrameBuffer = api_vram_get_current();
+
     FrameBuffer = malloc(SCREEN_WIDTH * SCREEN_HEIGHT * SCREEN_BITS_PER_PIXEL / 8);
 
     if (FrameBuffer == NULL) {
@@ -36,7 +36,7 @@ static void initialize_fbdev() {
                 strerror(errno));
         exit(1);
     }
-    */
+    
     printf("info: succ create framebuffer\n");
 }
 

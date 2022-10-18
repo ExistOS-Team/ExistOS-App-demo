@@ -13,7 +13,7 @@
 #include "RepicoGL/GL/gl.h"
 
 uint8_t vram[256 * 128];
-
+uint8_t *vram_gl;
 /*
  * Draw a gear wheel.  You'll probably want to call this function when
  * building a display list since we do a lot of trig here.
@@ -251,6 +251,18 @@ int loop(void)
     angle += 2.0;
 
     draw();
+
+    vram_gl = getFrameBuffer();
+    for(int y = 0; y < 128; y++)
+    {
+        for(int x = 0; x < 256; x++)
+        {
+            vram[256 * y + x] = (vram_gl[128 * (y / 2) + (x / 2)] + vram_gl[128 * (y / 2) + (x / 2+1)])/2
+            
+            ;
+        }
+    }
+    
     api_vram_flush();
 
     if (api_get_key(KEY_F6))
@@ -263,7 +275,10 @@ int loop(void)
         view_rotx -= 5.0;
     if (api_get_key(KEY_UP))
         view_rotx += 5.0;
-
+    if (api_get_key(KEY_SUBTRACTION))
+        view_rotz -= 5.0;
+    if (api_get_key(KEY_PLUS))
+        view_rotz += 5.0;
     return 0;
 }
 
